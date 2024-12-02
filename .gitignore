@@ -1,0 +1,42 @@
+# Maven target directory
+/target/
+
+# IntelliJ IDEA
+/.idea
+*.iml
+
+# Eclipse
+/.settings/
+/.project
+/.classpath
+
+# NetBeans
+/nbproject/private/
+/build/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# VS Code
+.vscode/
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo

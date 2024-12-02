@@ -1,0 +1,93 @@
+
+
+import java.nio.file.*;
+import java.io.IOException;
+import java.util.*;
+
+/*
+
+You haven't even left yet and the group of Elvish Senior Historians has already hit a problem: their list of locations to check is currently empty. Eventually, someone decides that the best place to check first would be the Chief Historian's office.
+
+Upon pouring into the office, everyone confirms that the Chief Historian is indeed nowhere to be found. Instead, the Elves discover an assortment of notes and lists of historically significant locations! This seems to be the planning the Chief Historian was doing before he left. Perhaps these notes can be used to determine which locations to search?
+
+Throughout the Chief's office, the historically significant locations are listed not by name but by a unique number called the location ID. To make sure they don't miss anything, The Historians split into two groups, each searching the office and trying to create their own complete list of location IDs.
+
+There's just one problem: by holding the two lists up side by side (your puzzle input), it quickly becomes clear that the lists aren't very similar. Maybe you can help The Historians reconcile their lists?
+
+For example:
+
+3   4
+4   3
+2   5
+1   3
+3   9
+3   3
+Maybe the lists are only off by a small amount! To find out, pair up the numbers and measure how far apart they are. Pair up the smallest number in the left list with the smallest number in the right list, then the second-smallest left number with the second-smallest right number, and so on.
+
+Within each pair, figure out how far apart the two numbers are; you'll need to add up all of those distances. For example, if you pair up a 3 from the left list with a 7 from the right list, the distance apart is 4; if you pair up a 9 with a 3, the distance apart is 6.
+
+In the example list above, the pairs and distances would be as follows:
+
+The smallest number in the left list is 1, and the smallest number in the right list is 3. The distance between them is 2.
+The second-smallest number in the left list is 2, and the second-smallest number in the right list is another 3. The distance between them is 1.
+The third-smallest number in both lists is 3, so the distance between them is 0.
+The next numbers to pair up are 3 and 4, a distance of 1.
+The fifth-smallest numbers in each list are 3 and 5, a distance of 2.
+Finally, the largest number in the left list is 4, while the largest number in the right list is 9; these are a distance 5 apart.
+To find the total distance between the left list and the right list, add up the distances between all of the pairs you found. In the example above, this is 2 + 1 + 0 + 1 + 2 + 5, a total distance of 11!
+
+Your actual left and right lists contain many location IDs. What is the total distance between your lists?
+
+ */
+
+public class Day01B {
+    public static void main(String[] args) {
+            try {
+                //Lectura del fichero en 2 columnas
+                List<String> lines = Files.readAllLines(Paths.get("res/Day01_input.txt"));
+                List<Integer> leftList = new ArrayList<>();
+                List<Integer> rightList = new ArrayList<>();
+
+                for (String line : lines) {
+                    String[] parts = line.split("\\s+");
+                    leftList.add(Integer.parseInt(parts[0]));
+                    rightList.add(Integer.parseInt(parts[1]));
+                }
+
+                //Ordenar las listas
+                Collections.sort(leftList);
+                Collections.sort(rightList);
+
+
+                //Calcular la distancia total
+                int totalDistance = 0;
+                for (int i = 0; i < leftList.size(); i++) {
+                    totalDistance += Math.abs(leftList.get(i) - rightList.get(i));
+                }
+
+                System.out.println("Total distance: " + totalDistance);
+
+
+                /*
+                 * PART 2:
+                This time, you'll need to figure out exactly how often each number from the left list appears in the right list. 
+                Calculate a total similarity score by adding up each number in the left list after multiplying it by the number of times 
+                that number appears in the right list.
+                 */
+
+                //Calcular la puntuación total
+                int totalScore = 0;
+                for (int i = 0; i < leftList.size(); i++) {
+                    int leftNumber = leftList.get(i);
+                    int rightCount = Collections.frequency(rightList, leftNumber);
+                    totalScore += leftNumber * rightCount;
+                }
+
+                System.out.println("Total score: " + totalScore);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }        
+    }
+
+}
