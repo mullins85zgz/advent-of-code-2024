@@ -13,27 +13,37 @@ Only the four highlighted sections are real mul instructions. Adding up the resu
 
 Scan the corrupted memory for uncorrupted mul instructions. What do you get if you add up all of the results of the multiplications?
 
+Part 2:
+
+There are two new instructions you'll need to handle:
+
+The do() instruction enables future mul instructions.
+The don't() instruction disables future mul instructions.
+Only the most recent do() or don't() instruction applies. At the beginning of the program, mul instructions are enabled.
+
  */
 
-import java.util.regex.Pattern;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.math.BigInteger;
-
-public class Day03 {
+ import java.util.regex.Pattern;
+ import java.nio.file.Files;
+ import java.nio.file.Paths;
+ import java.util.List;
+ import java.util.regex.Matcher;
+ import java.math.BigInteger;
+ 
+public class Day03B {
     public static void main(String[] args) {
-        String input = "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))";
+        String input = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))";
         System.out.println(mul(input));
 
         try {
             // Lectura del fichero en 2 columnas
             List<String> lines = Files.readAllLines(Paths.get("res/Day03_input.txt"));
             BigInteger sum = BigInteger.ZERO;
+            String totalLines = "";
             for (String line : lines) {
-                sum = sum.add(mul(line));
+                totalLines += line;
             }
+            sum = sum.add(mul(totalLines));
             System.out.println(sum);
         } catch (Exception e) {
             e.printStackTrace();
@@ -41,14 +51,24 @@ public class Day03 {
     }
 
     public static BigInteger mul(String input) {
-        BigInteger sum = BigInteger.ZERO;
-        Pattern pattern = Pattern.compile("mul\\((\\d+),(\\d+)\\)");
+        Pattern pattern = Pattern.compile("mul\\((\\d+),(\\d+)\\)|do\\(\\)|don't\\(\\)");
         Matcher matcher = pattern.matcher(input);
+        BigInteger sum = BigInteger.ZERO;
+        boolean enabled = true;
+
         while (matcher.find()) {
-            // System.out.println(matcher.group());
-            BigInteger x = new BigInteger(matcher.group(1));
-            BigInteger y = new BigInteger(matcher.group(2));
-            sum = sum.add(x.multiply(y));
+            String match = matcher.group();
+            System.out.println(match);
+            if (match.startsWith("do()")) {
+            enabled = true;
+            } else if (match.startsWith("don't()")) {
+            enabled = false;
+            } else if (enabled && match.startsWith("mul(")) {
+            String[] numbers = match.substring(4, match.length() - 1).split(",");
+            BigInteger num1 = new BigInteger(numbers[0]);
+            BigInteger num2 = new BigInteger(numbers[1]);
+            sum = sum.add(num1.multiply(num2));
+            }
         }
         return sum;
     }
