@@ -26,7 +26,7 @@ of page numbers 75, 47, 61, 53, and 29.
      public static void main(String[] args) {
          try {
              //Lecutra de las reglas y los updates
-             List<String> lines = Files.readAllLines(Paths.get("res/Day05_inputTest.txt"));
+             List<String> lines = Files.readAllLines(Paths.get("res/Day05_input.txt"));
  
              ArrayList<String> rules = new ArrayList<>();
              ArrayList<String[]> updates = new ArrayList<>();
@@ -76,28 +76,30 @@ of page numbers 75, 47, 61, 53, and 29.
             //Para ello, vamos a recorrer los updates incorrectos y vamos a ir moviendo los elementos de la lista
 
             for (String[] update : rightUpdates) {
-                System.out.println("ELEMENTO");
-                for (String rule : rules) {
-                    String[] parts = rule.split("\\|");
-                    int index1 = -1;
-                    int index2 = -1;
-                    for (int i = 0; i < update.length; i++) {
-                        if (update[i].equals(parts[0])) {
-                            index1 = i;
+                boolean sorted;
+                do {
+                    sorted = true;
+                    for (String rule : rules) {
+                        String[] parts = rule.split("\\|");
+                        int index1 = -1;
+                        int index2 = -1;
+                        for (int i = 0; i < update.length; i++) {
+                            if (update[i].equals(parts[0])) {
+                                index1 = i;
+                            }
+                            if (update[i].equals(parts[1])) {
+                                index2 = i;
+                            }
                         }
-                        if (update[i].equals(parts[1])) {
-                            index2 = i;
+                        if (index1 != -1 && index2 != -1 && index1 > index2) {
+                            // Si se cumple la regla, movemos el elemento de la lista
+                            String aux = update[index1];
+                            update[index1] = update[index2];
+                            update[index2] = aux;
+                            sorted = false;
                         }
                     }
-                    if (index1 != -1 && index2 != -1 && index1 > index2) {
-                        //Si se cumple la regla, movemos el elemento de la lista
-                        String aux = update[index1];
-                        update[index1] = update[index2];
-                        update[index2] = aux;
-                        System.out.println("Se ha movido el elemento " + update[index1] + " a la posición " + index2);
-                        System.out.println("Se ha movido el elemento " + update[index2] + " a la posición " + index1);
-                    }
-                }
+                } while (!sorted);
             }
  
              // Paso 4: se imprime el resultado de los updates correctos
