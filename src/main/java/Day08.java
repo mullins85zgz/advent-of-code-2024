@@ -1,10 +1,14 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Day08 {
+
+    public static BigInteger totalAntinodesStatic = BigInteger.ZERO;
+
     public static void main(String[] args) {
         String filePath = "res/Day08_inputTest.txt";
         List<String[]> antennaPositions = readAntennaPositions(filePath);
@@ -28,10 +32,23 @@ public class Day08 {
         List<String[]> antinodes = calculateAntinodes(antennaPositions);
 
         // 2. Incorporar los antinodos a la matriz
+        BigInteger totalAntiNodes = BigInteger.ZERO;
         for (String[] antinode : antinodes) {
             int i = Integer.parseInt(antinode[0]);
             int j = Integer.parseInt(antinode[1]);
-            antennaPositions.get(i)[j] = "#";
+            if (antennaPositions.get(i)[j].equals(".")) {
+                antennaPositions.get(i)[j] = "#";
+                totalAntiNodes = totalAntiNodes.add(BigInteger.ONE);
+            } else if (antennaPositions.get(i)[j].equals("#")) {
+                System.out.println("Antinode already exists in position: " + i + ", " + j);
+                totalAntiNodes = totalAntiNodes.add(BigInteger.ONE);
+            } else if (antennaPositions.get(i)[j].equals(antinode[2])) {
+                System.out.println("Antinode already exists in position: " + i + ", " + j);
+                totalAntiNodes = totalAntiNodes.add(BigInteger.ONE);
+            } else {
+                System.out.println("Antinode already exists in position: " + i + ", " + j);
+            }
+
         }
 
         // 3. Imprimir la matriz
@@ -41,6 +58,9 @@ public class Day08 {
             }
             System.out.println();
         }
+
+        System.out.println("Total antinodes: " + totalAntiNodes);
+        System.out.println("Total antinodes static: " + totalAntinodesStatic);
     }
 
     public static List<String[]> readAntennaPositions(String filePath) {
@@ -60,25 +80,6 @@ public class Day08 {
         return positions;
     }
 
-    // Calcular los antinodos.
-    // An antinode occurs at any point that is perfectly in line with two antennas
-    // of the same frequency
-    // Same frequency means that the antennas have the same value
-    // This means that for any pair of antennas with the same frequency, there are
-    // two antinodes, one on either side of them.
-    // So, for these two antennas with frequency a, they create the two antinodes
-    // marked with #:
-
-    // ..........
-    // ...#......
-    // ..........
-    // ....a.....
-    // ..........
-    // .....a....
-    // ..........
-    // ......#...
-    // ..........
-    // ..........
     public static List<String[]> calculateAntinodes(List<String[]> antennaPositions) {
         List<String[]> antinodes = new ArrayList<>();
         for (int i = 0; i < antennaPositions.size(); i++) {
@@ -86,22 +87,69 @@ public class Day08 {
                 if (antennaPositions.get(i)[j].equals(".")) {
                     continue;
                 }
-                String value = antennaPositions.get(i)[j];
-                // Check to the right
-                if (j + 1 < antennaPositions.get(i).length && antennaPositions.get(i)[j + 1].equals(value)) {
-                    antinodes.add(new String[] { String.valueOf(i), String.valueOf(j + 2) });
-                }
-                // Check to the left
-                if (j - 1 >= 0 && antennaPositions.get(i)[j - 1].equals(value)) {
-                    antinodes.add(new String[] { String.valueOf(i), String.valueOf(j - 2) });
-                }
-                // Check below
-                if (i + 1 < antennaPositions.size() && antennaPositions.get(i + 1)[j].equals(value)) {
-                    antinodes.add(new String[] { String.valueOf(i + 2), String.valueOf(j) });
-                }
-                // Check above
-                if (i - 1 >= 0 && antennaPositions.get(i - 1)[j].equals(value)) {
-                    antinodes.add(new String[] { String.valueOf(i - 2), String.valueOf(j) });
+                String frequency = antennaPositions.get(i)[j];
+                for (int k = 0; k < antennaPositions.size(); k++) {
+                    for (int l = 0; l < antennaPositions.get(k).length; l++) {
+                        if (antennaPositions.get(k)[l].equals(".")) {
+                            continue;
+                        }
+                        // Si la antena es la misma, no hacemos nada
+                        if (i == k && j == l) {
+                            continue;
+                        }
+                        if (antennaPositions.get(k)[l].equals(frequency)) {
+                            // Calculamos la distancia entre las antenas
+                            // int distance = Math.abs(i - k) + Math.abs(j - l);
+                            // Calculamos los antinodos
+                            // Antinodo 1
+                            int antinode1i = i + (i - k);
+                            int antinode1j = j + (j - l);
+                            if (antinode1i >= 0 && antinode1i < antennaPositions.size() && antinode1j >= 0
+                                    && antinode1j < antennaPositions.get(antinode1i).length) {
+                                String[] antinode1 = { String.valueOf(antinode1i), String.valueOf(antinode1j),
+                                        frequency };
+                                boolean exists = false;
+                                for (String[] existingAntinode : antinodes) {
+                                    if (existingAntinode[0].equals(String.valueOf(antinode1i)) &&
+                                            existingAntinode[1].equals(String.valueOf(antinode1j)) &&
+                                            existingAntinode[2].equals(frequency)) {
+                                        exists = true;
+                                        break;
+                                    }
+                                }
+                                if (!exists) {
+                                    antinodes.add(antinode1);
+                                    System.out.println(
+                                            "Antinode 1 added: " + antinode1i + ", " + antinode1j + ", " + frequency);
+                                    totalAntinodesStatic = totalAntinodesStatic.add(BigInteger.ONE);
+                                }
+                            }
+                            // Antinodo 2
+                            int antinode2i = i - (i - k);
+                            int antinode2j = j - (j - l);
+                            if (antinode2i >= 0 && antinode2i < antennaPositions.size() && antinode2j >= 0
+                                    && antinode2j < antennaPositions.get(antinode2i).length) {
+                                String[] antinode2 = { String.valueOf(antinode2i), String.valueOf(antinode2j),
+                                        frequency };
+                                boolean exists = false;
+                                for (String[] existingAntinode : antinodes) {
+                                    if (existingAntinode[0].equals(String.valueOf(antinode2i)) &&
+                                            existingAntinode[1].equals(String.valueOf(antinode2j)) &&
+                                            existingAntinode[2].equals(frequency)) {
+                                        exists = true;
+                                        break;
+                                    }
+                                }
+                                if (!exists) {
+                                    antinodes.add(antinode2);
+                                    System.out.println(
+                                            "Antinode 2 added: " + antinode2i + ", " + antinode2j + ", " + frequency);
+                                    totalAntinodesStatic = totalAntinodesStatic.add(BigInteger.ONE);
+                                }
+                            }
+
+                        }
+                    }
                 }
             }
         }
