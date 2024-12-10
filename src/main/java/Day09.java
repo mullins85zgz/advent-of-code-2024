@@ -8,18 +8,18 @@ import java.util.List;
 import java.math.BigInteger;
 public class Day09 {
 public static void main (String[] args) {
-    String diskMap = "2333133121414131402";
-    // String diskMap = "12345";
+    // String diskMap = "2333133121414131402";
+    String diskMap = "12345";
 
 
-    try {
-        List<String> lines = Files.readAllLines(Paths.get("res/Day09_input.txt"));
-        for (String line : lines) {
-            diskMap += line;
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
+    // try {
+    //     List<String> lines = Files.readAllLines(Paths.get("res/Day09_input.txt"));
+    //     for (String line : lines) {
+    //         diskMap += line;
+    //     }
+    // } catch (Exception e) {
+    //     e.printStackTrace();
+    // }
 
 
 
@@ -68,39 +68,23 @@ public static void main (String[] args) {
         fileLengths.add(files.get(i));
     }
 
-    // 6. Print the disk map
-    System.out.println("Disk map: " + diskMap);
+    BigInteger[] diskMapArrayList = new BigInteger[diskMap.length()];
 
-    // 7. Print the files
-    System.out.println("Files: " + files);
-
-    // 8. Print the free spaces
-    System.out.println("Free spaces: " + freeSpaces);
-
-    // 9. Print the file IDs
-    System.out.println("File IDs: " + fileIDs);
-
-    // 10. Print the file lengths
-    System.out.println("File lengths: " + fileLengths);
-
-    // 11. Print the individual blocks
-    String diskMapString = "";
     for (int i = 0; i < files.size(); i++) {
         for (int j = 0; j < files.get(i); j++) {
-            System.out.print(i);
-            diskMapString += i;
+            System.out.print(i+j);
+            diskMapArrayList[i + j] = BigInteger.valueOf(i);
         }
         if(freeSpaces.size() > i) {
             for (int j = 0; j < freeSpaces.get(i); j++) {
-                System.out.print(".");
-                diskMapString += ".";
+                System.out.print(i + files.get(i) + j);
+                diskMapArrayList[i + files.get(i) + j] = BigInteger.valueOf(-1);
             }
         }
     }
 
-    System.out.println();
-    System.out.println("Disk map string: " + diskMapString);
-    System.out.println();
+
+
     
     /*
      * The amphipod would like to move file blocks one at a time from the end of the disk to the leftmost 
@@ -125,20 +109,28 @@ public static void main (String[] args) {
 
     //Recorre diskmap String y ve poniendo los numeros de atras adelante en los huecos libres, hasta que solo queden huecos detras
 
-    char[] diskArray = diskMapString.toCharArray();
-    for (int i = diskArray.length - 1; i >= 0; i--) {
-        if (Character.isDigit(diskArray[i])) {
-            for (int j = 0; j < i; j++) {
-                if (diskArray[j] == '.') {
-                    diskArray[j] = diskArray[i];
-                    diskArray[i] = '.';
-                    break;
+    int lastFreeSpace = 0;
+    for (int i = 0; i < diskMapArrayList.length; i++) {
+        if (diskMapArrayList[i] == null || diskMapArrayList[i].equals(BigInteger.valueOf(-1))) {
+            lastFreeSpace = i;
+            break;
+        }
+    }
+
+    for (int i = diskMapArrayList.length - 1; i >= 0; i--) {
+        if (diskMapArrayList[i] != null && !diskMapArrayList[i].equals(BigInteger.valueOf(-1))) {
+            if (lastFreeSpace < i) {
+                diskMapArrayList[lastFreeSpace] = diskMapArrayList[i];
+                diskMapArrayList[i] = BigInteger.valueOf(-1);
+                for (int j = lastFreeSpace + 1; j < diskMapArrayList.length; j++) {
+                    if (diskMapArrayList[j] == null || diskMapArrayList[j].equals(BigInteger.valueOf(-1))) {
+                        lastFreeSpace = j;
+                        break;
+                    }
                 }
             }
         }
     }
-
-    System.out.println("Rearranged disk map: " + new String(diskArray));
 
     /*
      * The final step of this file-compacting process is to update the filesystem checksum. 
@@ -148,9 +140,9 @@ public static void main (String[] args) {
 
     // 13. Calculate the checksum
     BigInteger checksum = BigInteger.ZERO;
-    for (int i = 0; i < diskArray.length; i++) {
-        if (Character.isDigit(diskArray[i])) {
-            checksum = checksum.add(BigInteger.valueOf(Character.getNumericValue(diskArray[i])).multiply(BigInteger.valueOf(i)));
+    for (int i = 0; i < diskMapArrayList.length; i++) {
+        if (diskMapArrayList[i] != null && !diskMapArrayList[i].equals(BigInteger.valueOf(-1))) {
+            checksum = checksum.add(BigInteger.valueOf(i).multiply(diskMapArrayList[i]));
         }
     }
 
