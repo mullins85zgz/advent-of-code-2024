@@ -5,12 +5,12 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Day08 {
+public class Day08B {
 
     public static BigInteger totalAntinodesStatic = BigInteger.ZERO;
 
     public static void main(String[] args) {
-        String filePath = "res/Day08_input.txt";
+        String filePath = "res/Day08_inputTest.txt";
         List<String[]> antennaPositions = readAntennaPositions(filePath);
         for (String[] position : antennaPositions) {
             for (String s : position) {
@@ -129,6 +129,35 @@ public class Day08 {
                                     totalAntinodesStatic = totalAntinodesStatic.add(BigInteger.ONE);
                                 }
                             }
+                            // Antinodos adicionales
+                            int prevAntinodei = antinode1i;
+                            int prevAntinodej = antinode1j;
+                            while (true) {
+                                int newAntinodei = prevAntinodei + (i - k);
+                                int newAntinodej = prevAntinodej + (j - l);
+                                if (newAntinodei >= 0 && newAntinodei < antennaPositions.size() && newAntinodej >= 0
+                                        && newAntinodej < antennaPositions.get(newAntinodei).length) {
+                                    String[] newAntinode = { String.valueOf(newAntinodei), String.valueOf(newAntinodej),
+                                            frequency };
+                                    boolean exists = false;
+                                    for (String[] existingAntinode : antinodes) {
+                                        if (existingAntinode[0].equals(String.valueOf(newAntinodei)) &&
+                                                existingAntinode[1].equals(String.valueOf(newAntinodej))) {
+                                            exists = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!exists) {
+                                        antinodes.add(newAntinode);
+                                        System.out.println("Additional antinode added: " + newAntinodei + ", " + newAntinodej + ", " + frequency);
+                                        totalAntinodesStatic = totalAntinodesStatic.add(BigInteger.ONE);
+                                    }
+                                    prevAntinodei = newAntinodei;
+                                    prevAntinodej = newAntinodej;
+                                } else {
+                                    break;
+                                }
+                            }
                             // Antinodo 2
                             int antinode2i = k + (k - i);
                             int antinode2j = l + (l - j);
@@ -149,6 +178,35 @@ public class Day08 {
                                     System.out.println(
                                             "Antinode 2 added: " + antinode2i + ", " + antinode2j + ", " + frequency);
                                     totalAntinodesStatic = totalAntinodesStatic.add(BigInteger.ONE);
+                                }
+                            }
+                            // Antinodos adicionales para el segundo antinodo
+                            prevAntinodei = antinode2i;
+                            prevAntinodej = antinode2j;
+                            while (true) {
+                                int newAntinodei = prevAntinodei + (k - i);
+                                int newAntinodej = prevAntinodej + (l - j);
+                                if (newAntinodei >= 0 && newAntinodei < antennaPositions.size() && newAntinodej >= 0
+                                        && newAntinodej < antennaPositions.get(newAntinodei).length) {
+                                    String[] newAntinode = { String.valueOf(newAntinodei), String.valueOf(newAntinodej),
+                                            frequency };
+                                    boolean exists = false;
+                                    for (String[] existingAntinode : antinodes) {
+                                        if (existingAntinode[0].equals(String.valueOf(newAntinodei)) &&
+                                                existingAntinode[1].equals(String.valueOf(newAntinodej))) {
+                                            exists = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!exists) {
+                                        antinodes.add(newAntinode);
+                                        System.out.println("Additional antinode added: " + newAntinodei + ", " + newAntinodej + ", " + frequency);
+                                        totalAntinodesStatic = totalAntinodesStatic.add(BigInteger.ONE);
+                                    }
+                                    prevAntinodei = newAntinodei;
+                                    prevAntinodej = newAntinodej;
+                                } else {
+                                    break;
                                 }
                             }
 
