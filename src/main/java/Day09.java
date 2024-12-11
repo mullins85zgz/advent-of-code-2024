@@ -8,18 +8,18 @@ import java.util.List;
 import java.math.BigInteger;
 public class Day09 {
 public static void main (String[] args) {
-    // String diskMap = "2333133121414131402";
-    String diskMap = "12345";
+    String diskMap = "2333133121414131402";
+    // String diskMap = "12345";
 
 
-    // try {
-    //     List<String> lines = Files.readAllLines(Paths.get("res/Day09_input.txt"));
-    //     for (String line : lines) {
-    //         diskMap += line;
-    //     }
-    // } catch (Exception e) {
-    //     e.printStackTrace();
-    // }
+    try {
+        List<String> lines = Files.readAllLines(Paths.get("res/Day09_input.txt"));
+        for (String line : lines) {
+            diskMap += line;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
 
 
 
@@ -68,22 +68,29 @@ public static void main (String[] args) {
         fileLengths.add(files.get(i));
     }
 
-    BigInteger[] diskMapArrayList = new BigInteger[diskMap.length()];
+    ArrayList<BigInteger> diskMapArrayList = new ArrayList<BigInteger>();
+
+
 
     for (int i = 0; i < files.size(); i++) {
         for (int j = 0; j < files.get(i); j++) {
-            System.out.print(i+j);
-            diskMapArrayList[i + j] = BigInteger.valueOf(i);
+            diskMapArrayList.add(BigInteger.valueOf(i));
         }
         if(freeSpaces.size() > i) {
             for (int j = 0; j < freeSpaces.get(i); j++) {
-                System.out.print(i + files.get(i) + j);
-                diskMapArrayList[i + files.get(i) + j] = BigInteger.valueOf(-1);
+                diskMapArrayList.add(BigInteger.valueOf(-1));
             }
         }
     }
 
-
+    //Imprime el diskMapArrayList, sacando un . si es -1 y el numero si es un numero
+    // for (int i = 0; i < diskMapArrayList.size(); i++) {
+    //     if (diskMapArrayList.get(i).equals(BigInteger.valueOf(-1))) {
+    //         System.out.print(".");
+    //     } else {
+    //         System.out.print(diskMapArrayList.get(i));
+    //     }
+    // }
 
     
     /*
@@ -109,28 +116,28 @@ public static void main (String[] args) {
 
     //Recorre diskmap String y ve poniendo los numeros de atras adelante en los huecos libres, hasta que solo queden huecos detras
 
-    int lastFreeSpace = 0;
-    for (int i = 0; i < diskMapArrayList.length; i++) {
-        if (diskMapArrayList[i] == null || diskMapArrayList[i].equals(BigInteger.valueOf(-1))) {
-            lastFreeSpace = i;
-            break;
+    for(int i = diskMapArrayList.size(); i > 0; i--) {
+        if(!diskMapArrayList.get(i-1).equals(BigInteger.valueOf(-1))) {
+            int indexOfMinus1 = diskMapArrayList.indexOf(BigInteger.valueOf(-1));
+            if(indexOfMinus1 != -1 && indexOfMinus1 < i-1) {
+                diskMapArrayList.set(indexOfMinus1, diskMapArrayList.get(i-1));
+                diskMapArrayList.set(i-1, BigInteger.valueOf(-1));
+            }            
         }
     }
 
-    for (int i = diskMapArrayList.length - 1; i >= 0; i--) {
-        if (diskMapArrayList[i] != null && !diskMapArrayList[i].equals(BigInteger.valueOf(-1))) {
-            if (lastFreeSpace < i) {
-                diskMapArrayList[lastFreeSpace] = diskMapArrayList[i];
-                diskMapArrayList[i] = BigInteger.valueOf(-1);
-                for (int j = lastFreeSpace + 1; j < diskMapArrayList.length; j++) {
-                    if (diskMapArrayList[j] == null || diskMapArrayList[j].equals(BigInteger.valueOf(-1))) {
-                        lastFreeSpace = j;
-                        break;
-                    }
-                }
-            }
-        }
-    }
+    // System.out.println();
+
+    //     //Imprime el diskMapArrayList, sacando un . si es -1 y el numero si es un numero
+    //     for (int i = 0; i < diskMapArrayList.size(); i++) {
+    //         if (diskMapArrayList.get(i).equals(BigInteger.valueOf(-1))) {
+    //             System.out.print(".");
+    //         } else {
+    //             System.out.print(diskMapArrayList.get(i));
+    //         }
+    //     }
+
+    //     System.out.println();
 
     /*
      * The final step of this file-compacting process is to update the filesystem checksum. 
@@ -140,11 +147,12 @@ public static void main (String[] args) {
 
     // 13. Calculate the checksum
     BigInteger checksum = BigInteger.ZERO;
-    for (int i = 0; i < diskMapArrayList.length; i++) {
-        if (diskMapArrayList[i] != null && !diskMapArrayList[i].equals(BigInteger.valueOf(-1))) {
-            checksum = checksum.add(BigInteger.valueOf(i).multiply(diskMapArrayList[i]));
+    for (int i = 0; i < diskMapArrayList.size(); i++) {
+        if (!diskMapArrayList.get(i).equals(BigInteger.valueOf(-1))) {
+            checksum = checksum.add(BigInteger.valueOf(i).multiply(diskMapArrayList.get(i)));
         }
     }
+
 
     System.out.println("Checksum: " + checksum);
 
