@@ -15,7 +15,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class Day10 {
+public class Day10B {
     public static void main(String[] args) {
         int[][] map = readMap();
         int score = 0;
@@ -64,7 +64,7 @@ public class Day10 {
             if (x >= 0 && x < map.length && y >= 0 && y < map[x].length && !visited[x][y]) {
                 if (map[x][y] == 9 && map[i][j] == 8 && !reachedNine[x][y]) {
                     score++;
-                    reachedNine[x][y] = true;
+                    // reachedNine[x][y] = true;
                     // System.out.println("Reached 9 at: " + x + ", " + y);
                 } else if (map[x][y] == map[i][j] + 1) {
                     score += findTrailsHelper(map, x, y, visited, reachedNine);
